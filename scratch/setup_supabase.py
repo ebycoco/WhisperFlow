@@ -1,4 +1,5 @@
 import requests
+import os
 
 SQL = """
 -- 1. Create a table for user profiles
@@ -59,7 +60,11 @@ CREATE TRIGGER on_auth_user_created
 
 def setup_supabase():
     project_ref = "nffvhotbnxapniqhakld"
-    token = "sbp_d236bd57f6c50e2612b8259b87312f4500f10d4c"
+    token = os.environ.get("SUPABASE_ACCESS_TOKEN")
+    
+    if not token:
+        print("Error: SUPABASE_ACCESS_TOKEN environment variable not set.")
+        return
     
     url = f"https://api.supabase.com/v1/projects/{project_ref}/database/query"
     headers = {
