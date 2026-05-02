@@ -1,0 +1,31 @@
+# WhisperFlow - Dependencies
+# ===========================
+
+# Audio Capture
+sounddevice==0.5.1
+numpy>=2.0.0
+
+# Speech-to-Text (Local)
+faster-whisper==1.1.0
+
+# Speech-to-Text (Cloud - Groq)
+groq>=0.18.0
+
+# Global Hotkey & Keyboard
+pynput==1.7.7
+
+# Clipboard
+pyperclip==1.9.0
+
+# System Tray
+pystray==0.19.5
+Pillow>=11.0.0
+
+# Modern UI
+customtkinter==5.2.2
+
+# Backend & Cloud Sync
+supabase==2.11.0
+
+# Build & Packaging
+pyinstaller>=6.10.0
