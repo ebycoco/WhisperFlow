@@ -11,7 +11,7 @@ class LoginWindow(ctk.CTkToplevel):
         
         # Window Setup
         self.title("WhisperFlow - Connexion")
-        self.geometry("400x550")
+        self.geometry("400x580")
         self.resizable(False, False)
         self.attributes('-topmost', True)
         
@@ -38,10 +38,18 @@ class LoginWindow(ctk.CTkToplevel):
         
         self.signup_button = ctk.CTkButton(self, text="Créer un compte", command=self.handle_signup, width=300, height=45, fg_color="transparent", border_width=1)
         self.signup_button.grid(row=5, column=0, padx=20, pady=10)
-        
+
+        # Forgot password
+        self.forgot_password_button = ctk.CTkButton(
+            self, text="Mot de passe oublié ?", command=self.handle_forgot_password,
+            width=300, height=25, fg_color="transparent", hover_color="#1a1a2e",
+            text_color="gray", font=ctk.CTkFont(size=12, underline=True),
+        )
+        self.forgot_password_button.grid(row=6, column=0, padx=20, pady=(0, 5))
+
         # Error Label
         self.error_label = ctk.CTkLabel(self, text="", text_color="red")
-        self.error_label.grid(row=6, column=0, padx=20, pady=10)
+        self.error_label.grid(row=7, column=0, padx=20, pady=10)
 
     def handle_login(self):
         email = self.email_entry.get()
@@ -82,3 +90,21 @@ class LoginWindow(ctk.CTkToplevel):
         else:
             self.after(0, lambda: self.error_label.configure(text="Erreur lors de la création du compte", text_color="red"))
             self.after(0, lambda: self.signup_button.configure(state="normal", text="Créer un compte"))
+
+    def handle_forgot_password(self):
+        email = self.email_entry.get()
+
+        if not email:
+            self.error_label.configure(text="Entrez votre email pour réinitialiser le mot de passe", text_color="red")
+            return
+
+        self.forgot_password_button.configure(state="disabled", text="Envoi...")
+        threading.Thread(target=self._forgot_password_thread, args=(email,), daemon=True).start()
+
+    def _forgot_password_thread(self, email):
+        success = self.supabase.reset_password_for_email(email)
+        if success:
+            self.after(0, lambda: self.error_label.configure(text="Email de réinitialisation envoyé !", text_color="green"))
+        else:
+            self.after(0, lambda: self.error_label.configure(text="Erreur lors de l'envoi de l'email", text_color="red"))
+        self.after(0, lambda: self.forgot_password_button.configure(state="normal", text="Mot de passe oublié ?"))

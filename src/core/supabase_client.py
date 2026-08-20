@@ -44,6 +44,15 @@ class SupabaseManager:
             logger.error(f"Signup failed: {e}")
             return False
 
+    def reset_password_for_email(self, email: str) -> bool:
+        try:
+            self.client.auth.reset_password_for_email(email)
+            logger.info(f"Password reset email sent to: {email}")
+            return True
+        except Exception as e:
+            logger.error(f"Password reset failed: {e}")
+            return False
+
     def logout(self):
         try:
             self.client.auth.sign_out()
