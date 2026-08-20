@@ -177,6 +177,8 @@ class App:
 
         if audio_data is None or len(audio_data) < 8000:  # < 0.5s of audio
             logger.warning("Audio too short or empty, ignoring.")
+            if self.settings.overlay_enabled:
+                self.overlay.hide()
             self._reset_ui()
             return
 
@@ -204,6 +206,8 @@ class App:
 
             if not raw_text:
                 logger.info("No speech detected.")
+                if self.settings.overlay_enabled:
+                    self.overlay.hide()
                 self._reset_ui()
                 return
 
@@ -285,6 +289,10 @@ class App:
     def toggle_pause(self, is_paused: bool):
         """Toggle hotkey pause state."""
         if is_paused:
+            # Stop any in-progress dictation first — otherwise pausing leaves the
+            # microphone recording indefinitely with no way to stop it via hotkey.
+            if self.recorder.is_recording:
+                self.stop_dictation()
             self.hotkey_manager.pause()
             self.tray.set_state("idle")  # Keep it simple for now
         else:

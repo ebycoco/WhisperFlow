@@ -159,11 +159,11 @@ class SettingsWindow:
         
         self.var_model = ctk.StringVar(value=self._settings.model)
         model_menu = ctk.CTkOptionMenu(
-            parent, values=["tiny", "base", "small", "medium"], variable=self.var_model, width=200
+            parent, values=["tiny", "base", "small", "medium", "large-v3"], variable=self.var_model, width=200
         )
         model_menu.grid(row=1, column=1, padx=20, pady=15, sticky="w")
-        
-        lbl_model_hint = ctk.CTkLabel(parent, text="('base' is recommended for CPU. 'small' for better accuracy if you have a GPU)", text_color="gray", font=("Segoe UI", 10))
+
+        lbl_model_hint = ctk.CTkLabel(parent, text="('base' is recommended for CPU. 'small'/'large-v3' for better accuracy if you have a GPU)", text_color="gray", font=("Segoe UI", 10))
         lbl_model_hint.grid(row=2, column=1, padx=20, pady=(0, 15), sticky="w")
 
         # Language

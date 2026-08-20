@@ -109,11 +109,16 @@ class WhisperEngine(BaseTranscriber):
             "vad_parameters": {
                 "min_silence_duration_ms": 500,
             },
-            "initial_prompt": "Ceci est une dictée vocale en français.", # Help Whisper stay in French
         }
 
         if language != "auto":
             transcribe_kwargs["language"] = language
+
+        # Only bias the model towards French when French is actually the target
+        # language — this used to be applied unconditionally, which degraded
+        # accuracy for every other supported language (en, es, de, it, auto).
+        if language == "fr":
+            transcribe_kwargs["initial_prompt"] = "Ceci est une dictée vocale en français."
 
         try:
             segments, info = self._model.transcribe(audio_float, **transcribe_kwargs)

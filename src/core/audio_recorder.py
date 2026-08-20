@@ -31,6 +31,7 @@ class AudioRecorder:
         self._stream = None
         self._lock = threading.Lock()
         self._audio_data = []
+        self._consumer_thread: Optional[threading.Thread] = None
 
     @property
     def is_recording(self) -> bool:
@@ -64,7 +65,8 @@ class AudioRecorder:
             logger.info("[AUDIO] Recording started")
             
             # Start a thread to consume the queue and avoid blocking the audio callback
-            threading.Thread(target=self._consume_queue, daemon=True).start()
+            self._consumer_thread = threading.Thread(target=self._consume_queue, daemon=True)
+            self._consumer_thread.start()
             
         except Exception as e:
             self._is_recording = False
@@ -94,6 +96,13 @@ class AudioRecorder:
             self._stream.stop()
             self._stream.close()
             self._stream = None
+
+        # Wait for the consumer thread to drain any audio chunks still sitting in the
+        # queue — otherwise the last chunk(s) captured right before stop() can be lost,
+        # cutting off the tail end of the recording.
+        if self._consumer_thread:
+            self._consumer_thread.join(timeout=1.0)
+            self._consumer_thread = None
 
         with self._lock:
             if not self._audio_data:

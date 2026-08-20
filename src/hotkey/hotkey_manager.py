@@ -109,6 +109,11 @@ class HotkeyManager:
     def pause(self):
         """Temporarily pause hotkey detection."""
         self._is_paused = True
+        # Reset combo-tracking state so a stale "active" flag doesn't cause the
+        # next post-resume press to be misread as a stop instead of a start.
+        self._is_active = False
+        self._pressed_keys.clear()
+        self._combo_already_pressed = False
         logger.info("[PAUSE] Hotkey paused")
 
     def resume(self):
